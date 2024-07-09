@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build --output public",
+    "dev": "next dev --output public",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },

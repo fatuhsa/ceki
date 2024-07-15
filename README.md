@@ -2,10 +2,6 @@
 
 Aplikasi penghitung untuk permainan kartu Ceki, dibuat dengan menggunakan Next.js dan Tailwind CSS.
 
-## Tangkapan Layar
-
-![Tangkapan Layar](url_gambar.png)
-
 ## Fitur
 
 - Menghitung skor pemain secara otomatis

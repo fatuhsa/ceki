@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Tentang Penghitung Ceki
 
-## Getting Started
+Aplikasi penghitung untuk permainan kartu Ceki, dibuat dengan menggunakan Next.js dan Tailwind CSS.
 
-First, run the development server:
+## Tangkapan Layar
 
-```bash
+![Tangkapan Layar](url_gambar.png)
+
+## Fitur
+
+- Menghitung skor pemain secara otomatis
+- Antarmuka pengguna yang responsif
+- Dapat digunakan di berbagai perangkat
+
+## Instalasi
+
+1. Clone repository ini:
+    ```sh
+    git clone https://github.com/fatuhsa/ceki.git
+    ```
+2. Masuk ke direktori proyek:
+    ```sh
+    cd ceki
+    ```
+3. Instal dependensi:
+    ```sh
+    npm install
+    # atau
+    yarn install
+    # atau
+    pnpm install
+    ```
+
+## Menjalankan Proyek
+
+Jalankan server pengembangan:
+```sh
 npm run dev
-# or
+# atau
 yarn dev
-# or
+# atau
 pnpm dev
-# or
+# atau
 bun dev
 ```
+Buka [http://localhost:3000](http://localhost:3000) di peramban Anda untuk melihat hasilnya.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Penggunaan
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Mulai dengan mengedit `app/page.js`. Halaman akan diperbarui secara otomatis saat Anda mengedit file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Pelajari Lebih Lanjut
 
-## Learn More
+Untuk mempelajari lebih lanjut tentang Next.js, lihat sumber daya berikut:
+- [Dokumentasi Next.js](https://nextjs.org/docs)
+- [Tutorial Interaktif Next.js](https://nextjs.org/learn)
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Cara termudah untuk mendeply aplikasi Next.js adalah dengan menggunakan [Platform Vercel](https://vercel.com) dari pencipta Next.js.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Kontribusi
 
-## Deploy on Vercel
+Kontribusi sangat dihargai! Jika Anda memiliki saran atau menemukan bug, silakan buat issue atau pull request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Lisensi
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Proyek ini dilisensikan di bawah lisensi MIT.
+
+---

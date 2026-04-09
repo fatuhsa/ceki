@@ -2,31 +2,24 @@ import Player from "./Player";
 
 const PlayerList = ({
   players,
-  onAddPlayer,
-  onEditScore,
-  onDelete,
   onResetScore,
   onEditNama,
+  selectedPlayerIndex,
+  onSelectPlayer,
 }) => {
   return (
-    <div className="players-list my-3">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {players.map((player, index) => (
         <Player
           key={index}
           nama={player.name}
           skor={player.score}
-          onEditScore={() => onEditScore(index)}
-          onDelete={() => onDelete(index)}
           onResetScore={() => onResetScore(index)}
           onEditNama={() => onEditNama(index, player.name)}
+          isSelected={selectedPlayerIndex === index}
+          onSelect={() => onSelectPlayer(index)}
         />
       ))}
-      <button
-        className="btn btn-circle btn-outline fixed right-5 bottom-5"
-        onClick={onAddPlayer}
-      >
-        +
-      </button>
     </div>
   );
 };

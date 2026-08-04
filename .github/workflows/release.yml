@@ -45,7 +45,7 @@ jobs:
             --non-interactive \
             --json > eas-build.json
           echo "EAS build finished. Status:"
-          node -p "require('./eas-build.json').status"
+          node -p "const b = require('./eas-build.json'); const arr = Array.isArray(b) ? b : [b]; arr[0].status"
 
       - name: Resolve release tag
         id: tag
@@ -60,7 +60,7 @@ jobs:
 
       - name: Download APK artifact
         run: |
-          URL=$(node -p "const b = require('./eas-build.json'); b && b.artifacts ? b.artifacts.buildUrl : ''")
+          URL=$(node -p "const b = require('./eas-build.json'); const arr = Array.isArray(b) ? b : [b]; const b0 = arr[0]; b0 && b0.artifacts ? b0.artifacts.buildUrl : ''")
           if [ -z "$URL" ]; then
             echo "No artifact URL in EAS build output"
             exit 1

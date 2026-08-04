@@ -1,0 +1,82 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (defaults to the app version)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build Android APK
+        run: |
+          npx eas-cli build \
+            --platform android \
+            --profile preview \
+            --non-interactive \
+            --json > eas-build.json
+          echo "EAS build finished. Status:"
+          node -p "require('./eas-build.json').status"
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ github.event.inputs.tag }}" ]; then
+            echo "name=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=v$(node -p "require('./app.json').expo.version")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download APK artifact
+        run: |
+          URL=$(node -p "const b = require('./eas-build.json'); b && b.artifacts ? b.artifacts.buildUrl : ''")
+          if [ -z "$URL" ]; then
+            echo "No artifact URL in EAS build output"
+            exit 1
+          fi
+          curl -fL -o ceki.apk "$URL"
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.tag.outputs.name }}"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" ceki.apk \
+              --title "Ceki $TAG" \
+              --notes "Android APK - install directly on your device (Android 8+)." \
+              --target "${{ github.sha }}"
+          else
+            gh release upload "$TAG" ceki.apk --clobber
+          fi

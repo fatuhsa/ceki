@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Rounded score card -->
+    <path
+        android:fillColor="#00BBFA"
+        android:pathData="M40,32 h28 a8,8 0 0 1 8,8 v28 a8,8 0 0 1 -8,8 h-28 a8,8 0 0 1 -8,-8 v-28 a8,8 0 0 1 8,-8 z" />
+    <!-- Plus sign -->
+    <path
+        android:fillColor="#001736"
+        android:pathData="M54,45 h4 v7 h7 v4 h-7 v7 h-4 v-7 h-7 v-4 h7 z" />
+</vector>

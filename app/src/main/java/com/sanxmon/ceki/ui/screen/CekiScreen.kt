@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,8 +25,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -61,8 +60,6 @@ import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appShapes
 import com.sanxmon.ceki.ui.theme.appTypography
 import com.sanxmon.ceki.ui.theme.blockShadow
-
-private const val CONTENT_BOTTOM_PADDING = 300
 
 /** Root composable: wires the ViewModel to the screen. */
 @Composable
@@ -106,19 +103,22 @@ fun CekiScreen(
                 },
             )
 
+            // Player area fills the space between header and bottom bar; the
+            // fixed 4 cards stretch to fit, so there is no dead gap above the
+            // keypad and no scrolling is needed.
             if (state.viewMode == ViewMode.GRID) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp, vertical = 24.dp)
-                        .padding(bottom = CONTENT_BOTTOM_PADDING.dp),
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     state.players.chunked(2).forEach { rowPlayers ->
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             rowPlayers.forEach { player ->
@@ -127,13 +127,12 @@ fun CekiScreen(
                                     playerScore = player.score,
                                     isSelected = state.selectedPlayerIndex == state.players.indexOf(player),
                                     largeScore = false,
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight(),
                                     onSelect = { viewModel.selectPlayer(state.players.indexOf(player)) },
                                     onLongPress = { viewModel.openActions(state.players.indexOf(player)) },
                                 )
-                            }
-                            if (rowPlayers.size == 1) {
-                                Spacer(Modifier.weight(1f))
                             }
                         }
                     }
@@ -143,9 +142,7 @@ fun CekiScreen(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp, vertical = 24.dp)
-                        .padding(bottom = CONTENT_BOTTOM_PADDING.dp),
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     state.players.forEachIndexed { index, player ->
@@ -154,7 +151,9 @@ fun CekiScreen(
                             playerScore = player.score,
                             isSelected = state.selectedPlayerIndex == index,
                             largeScore = true,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
                             onSelect = { viewModel.selectPlayer(index) },
                             onLongPress = { viewModel.openActions(index) },
                         )
@@ -222,16 +221,24 @@ fun CekiScreen(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .height(56.dp),
+                        .height(64.dp),
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .offset(y = (-14).dp)
-                            .fillMaxWidth(0.8f),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (state.hasSelection) {
+                    ScoreDisplay(
+                        input = state.scoreInput,
+                        applied = state.applied,
+                        hasSelection = state.hasSelection,
+                    )
+
+                    // Drawn after (on top of) the display so the opaque display
+                    // background can never cut the chip in half again.
+                    if (state.hasSelection) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .offset(y = (-12).dp)
+                                .fillMaxWidth(0.8f),
+                            contentAlignment = Alignment.Center,
+                        ) {
                             Text(
                                 text = state.selectedPlayer?.name.orEmpty(),
                                 maxLines = 1,
@@ -244,11 +251,6 @@ fun CekiScreen(
                             )
                         }
                     }
-                    ScoreDisplay(
-                        input = state.scoreInput,
-                        applied = state.applied,
-                        hasSelection = state.hasSelection,
-                    )
                 }
 
                 ControlButton(
@@ -391,16 +393,20 @@ private fun ScoreDisplay(
             }
 
             else -> {
+                // caption (13sp) keeps each hint line narrow enough to fit the
+                // display on small screens; maxLines guards against wrapping.
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = if (hasSelection) "KETIK NILAI" else "PILIH PLAYER",
-                        style = MaterialTheme.appTypography.label,
+                        style = MaterialTheme.appTypography.caption,
                         color = MaterialTheme.appColors.textFaint,
+                        maxLines = 1,
                     )
                     Text(
                         text = if (hasSelection) "LALU +/−" else "LALU KETIK NILAI",
-                        style = MaterialTheme.appTypography.label,
+                        style = MaterialTheme.appTypography.caption,
                         color = MaterialTheme.appColors.textFaint,
+                        maxLines = 1,
                     )
                 }
             }

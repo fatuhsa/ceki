@@ -1,7 +1,8 @@
 package com.sanxmon.ceki.ui.component
 
 import android.view.HapticFeedbackConstants
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalView
  * Pressable wrapper mirroring the original `CekiPressable.tsx`: haptic tick on
  * press, subtle scale/alpha feedback, disabled state dimming.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CekiPressable(
     onClick: () -> Unit,
@@ -40,7 +42,7 @@ fun CekiPressable(
                     else -> 1f
                 }
             }
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
                 indication = null,
                 enabled = enabled,

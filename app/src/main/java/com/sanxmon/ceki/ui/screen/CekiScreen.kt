@@ -290,7 +290,7 @@ fun CekiScreen(
                 error = state.error,
                 onNamaChange = viewModel::updateNewNama,
                 onClose = viewModel::closeEdit,
-                onEdit = viewModel::submitEdit,
+                onEdit = { viewModel.submitEdit() },
             )
         }
 

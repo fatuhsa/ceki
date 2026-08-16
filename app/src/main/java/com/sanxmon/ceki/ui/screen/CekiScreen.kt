@@ -70,9 +70,9 @@ fun CekiApp() {
 }
 
 /**
- * Main game screen mirroring `app/index.tsx`: header, player cards, floating
- * bottom bar with score controls and keypad, plus modal overlays. All colors
- * come from the active theme.
+ * Main game screen mirroring `app/index.tsx`: header, player cards and the
+ * bottom control bar (score controls + keypad) in one column, plus modal
+ * overlays. All colors come from the active theme.
  */
 @Composable
 fun CekiScreen(
@@ -126,7 +126,6 @@ fun CekiScreen(
                                     playerName = player.name,
                                     playerScore = player.score,
                                     isSelected = state.selectedPlayerIndex == state.players.indexOf(player),
-                                    largeScore = false,
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight(),
@@ -150,7 +149,7 @@ fun CekiScreen(
                             playerName = player.name,
                             playerScore = player.score,
                             isSelected = state.selectedPlayerIndex == index,
-                            largeScore = true,
+                            horizontal = true,
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth(),
@@ -160,121 +159,18 @@ fun CekiScreen(
                     }
                 }
             }
-        }
 
-        // Floating bottom bar: error line, +/- controls, score display, keypad.
-        val bottomBarDividerColor = MaterialTheme.colorScheme.outline
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .drawBehind {
-                    drawLine(
-                        color = bottomBarDividerColor,
-                        start = Offset(0f, 0f),
-                        end = Offset(size.width, 0f),
-                        strokeWidth = 2.dp.toPx(),
-                    )
-                }
-                .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets(bottom = 12.dp)))
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-        ) {
-            if (state.error != null) {
-                Text(
-                    text = state.error,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    style = MaterialTheme.appTypography.label,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-
-            val pendingLabel = state.scoreInput.takeIf { it.isNotEmpty() }?.let { "-$it" }
-            val addLabel = state.scoreInput.takeIf { it.isNotEmpty() }?.let { "+$it" }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                ControlButton(
-                    icon = { pressed ->
-                        Icon(
-                            imageVector = Icons.Filled.Remove,
-                            contentDescription = "Kurangi",
-                            tint = if (pressed) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                            modifier = Modifier.size(30.dp),
-                        )
-                    },
-                    label = pendingLabel,
-                    enabled = state.hasSelection,
-                    onClick = { viewModel.handleScoreUpdate(isAddition = false) },
-                )
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(64.dp),
-                ) {
-                    ScoreDisplay(
-                        input = state.scoreInput,
-                        applied = state.applied,
-                        hasSelection = state.hasSelection,
-                    )
-
-                    // Drawn after (on top of) the display so the opaque display
-                    // background can never cut the chip in half again.
-                    if (state.hasSelection) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .offset(y = (-12).dp)
-                                .fillMaxWidth(0.8f),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = state.selectedPlayer?.name.orEmpty(),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.primary)
-                                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                                style = MaterialTheme.appTypography.label,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        }
-                    }
-                }
-
-                ControlButton(
-                    icon = { pressed ->
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = "Tambah",
-                            tint = if (pressed) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                            modifier = Modifier.size(30.dp),
-                        )
-                    },
-                    label = addLabel,
-                    enabled = state.hasSelection,
-                    onClick = { viewModel.handleScoreUpdate(isAddition = true) },
-                )
-            }
-
-            Spacer(Modifier.height(14.dp))
-
-            Keypad(
+            // Bottom bar is the last child of the screen column, so the player
+            // area above it always ends right above the keypad — cards can
+            // never be covered or cut by the controls.
+            ScoreControlBar(
+                error = state.error,
+                scoreInput = state.scoreInput,
+                applied = state.applied,
+                hasSelection = state.hasSelection,
+                selectedPlayerName = state.selectedPlayer?.name.orEmpty(),
+                onAdd = { viewModel.handleScoreUpdate(isAddition = true) },
+                onSubtract = { viewModel.handleScoreUpdate(isAddition = false) },
                 onDigit = viewModel::appendDigit,
                 onBackspace = viewModel::backspace,
             )
@@ -419,7 +315,7 @@ private fun PlayerCardRowItem(
     playerName: String,
     playerScore: Int,
     isSelected: Boolean,
-    largeScore: Boolean,
+    horizontal: Boolean,
     modifier: Modifier,
     onSelect: () -> Unit,
     onLongPress: () -> Unit,
@@ -428,7 +324,7 @@ private fun PlayerCardRowItem(
         nama = playerName,
         skor = playerScore,
         isSelected = isSelected,
-        largeScore = largeScore,
+        horizontal = horizontal,
         modifier = modifier,
         onSelect = onSelect,
         onLongPress = onLongPress,
@@ -482,5 +378,139 @@ private fun ControlButton(
                 icon(pressed && enabled)
             }
         }
+    }
+}
+
+/**
+ * Bottom control bar: error line, +/- controls, score display (with the selected
+ * player chip) and the keypad. Drawn as the last child of the screen column so
+ * the player area above it is never covered by the controls.
+ */
+@Composable
+private fun ScoreControlBar(
+    error: String?,
+    scoreInput: String,
+    applied: AppliedFeedback?,
+    hasSelection: Boolean,
+    selectedPlayerName: String,
+    onAdd: () -> Unit,
+    onSubtract: () -> Unit,
+    onDigit: (String) -> Unit,
+    onBackspace: () -> Unit,
+) {
+    val dividerColor = MaterialTheme.colorScheme.outline
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .drawBehind {
+                drawLine(
+                    color = dividerColor,
+                    start = Offset(0f, 0f),
+                    end = Offset(size.width, 0f),
+                    strokeWidth = 2.dp.toPx(),
+                )
+            }
+            .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets(bottom = 12.dp)))
+            .padding(horizontal = 24.dp, vertical = 14.dp),
+    ) {
+        if (error != null) {
+            Text(
+                text = error,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                style = MaterialTheme.appTypography.label,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+
+        val pendingLabel = scoreInput.takeIf { it.isNotEmpty() }?.let { "-$it" }
+        val addLabel = scoreInput.takeIf { it.isNotEmpty() }?.let { "+$it" }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ControlButton(
+                icon = { pressed ->
+                    Icon(
+                        imageVector = Icons.Filled.Remove,
+                        contentDescription = "Kurangi",
+                        tint = if (pressed) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        modifier = Modifier.size(30.dp),
+                    )
+                },
+                label = pendingLabel,
+                enabled = hasSelection,
+                onClick = onSubtract,
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(64.dp),
+            ) {
+                ScoreDisplay(
+                    input = scoreInput,
+                    applied = applied,
+                    hasSelection = hasSelection,
+                )
+
+                // Drawn after (on top of) the display so the opaque display
+                // background can never cut the chip in half again.
+                if (hasSelection) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .offset(y = (-12).dp)
+                            .fillMaxWidth(0.8f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = selectedPlayerName,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(horizontal = 12.dp, vertical = 4.dp),
+                            style = MaterialTheme.appTypography.label,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                }
+            }
+
+            ControlButton(
+                icon = { pressed ->
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Tambah",
+                        tint = if (pressed) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        modifier = Modifier.size(30.dp),
+                    )
+                },
+                label = addLabel,
+                enabled = hasSelection,
+                onClick = onAdd,
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Keypad(
+            onDigit = onDigit,
+            onBackspace = onBackspace,
+        )
     }
 }

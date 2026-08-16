@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
@@ -42,7 +43,7 @@ fun PlayerCard(
     nama: String,
     skor: Int,
     isSelected: Boolean,
-    largeScore: Boolean,
+    horizontal: Boolean = false,
     modifier: Modifier = Modifier,
     onSelect: () -> Unit,
     onLongPress: () -> Unit,
@@ -86,36 +87,64 @@ fun PlayerCard(
             .blockShadow()
             .border(borderWidth, borderColor, shape)
             .background(bgColor, shape)
-            .padding(16.dp),
+            .padding(12.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-        ) {
-            Text(
-                text = nama.uppercase(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.appTypography.label,
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.appColors.textMuted
-                },
-            )
-            Text(
-                text = "$skor",
-                style = if (largeScore) {
-                    MaterialTheme.appTypography.scoreLarge
-                } else {
-                    MaterialTheme.appTypography.score
-                },
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-            )
+        if (horizontal) {
+            // Scoreboard row: name left, score right — a single line tall, so
+            // four rows always fit between header and keypad without overflow.
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = nama.uppercase(),
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.appTypography.label,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.appColors.textMuted
+                    },
+                )
+                Text(
+                    text = "$skor",
+                    style = MaterialTheme.appTypography.score,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+            ) {
+                Text(
+                    text = nama.uppercase(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.appTypography.label,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.appColors.textMuted
+                    },
+                )
+                Text(
+                    text = "$skor",
+                    style = MaterialTheme.appTypography.score,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+            }
         }
     }
 }

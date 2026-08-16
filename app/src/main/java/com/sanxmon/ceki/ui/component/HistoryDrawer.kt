@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sanxmon.ceki.domain.model.HistoryLog
 import com.sanxmon.ceki.domain.model.HistoryType
+import com.sanxmon.ceki.ui.theme.DiagonalCut
 import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appShapes
 import com.sanxmon.ceki.ui.theme.appTypography
@@ -290,8 +291,8 @@ private fun HistoryBadge(type: HistoryType) {
     Box(
         modifier = Modifier
             .size(22.dp)
-            .border(1.dp, badge.color, MaterialTheme.appShapes.badge)
-            .background(badge.color.copy(alpha = 0.15f), MaterialTheme.appShapes.badge),
+            .border(1.dp, badge.color, DiagonalCut)
+            .background(badge.color.copy(alpha = 0.15f), DiagonalCut),
         contentAlignment = Alignment.Center,
     ) {
         if (badge.icon != null) {

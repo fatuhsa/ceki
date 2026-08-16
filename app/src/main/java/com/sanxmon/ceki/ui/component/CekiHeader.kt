@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sanxmon.ceki.domain.model.ViewMode
+import com.sanxmon.ceki.ui.theme.DiagonalCut
 import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appTypography
 import kotlinx.coroutines.delay
@@ -86,14 +87,29 @@ fun CekiHeader(
                 }
             },
         ) {
-            Text(
-                text = if (armed) "KLIK: GAME BARU?" else "Ceki",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.appTypography.title,
-                color = if (armed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.graphicsLayer { rotationZ = -3f },
-            )
+            // Title sits on a diagonal-cut chip — the editorial cut is visible
+            // on the main screen, not just in dialogs.
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = if (armed) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        },
+                        shape = DiagonalCut,
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .graphicsLayer { rotationZ = -3f },
+            ) {
+                Text(
+                    text = if (armed) "GAME BARU?" else "Ceki",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.appTypography.title,
+                    color = if (armed) Color.White else MaterialTheme.colorScheme.onPrimary,
+                )
+            }
         }
 
         Row(

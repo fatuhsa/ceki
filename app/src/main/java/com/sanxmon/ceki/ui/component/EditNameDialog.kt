@@ -19,12 +19,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -34,8 +38,8 @@ import com.sanxmon.ceki.ui.theme.appShapes
 import com.sanxmon.ceki.ui.theme.appTypography
 
 /**
- * Rename dialog mirroring `edit-modal.tsx`: auto-focused input, inline error box,
- * SIMPAN / BATAL actions.
+ * Rename dialog mirroring `edit-modal.tsx`: auto-focused input, inline error box
+ * with danger border, SIMPAN (solid accent, diagonal cut) / BATAL (outline).
  */
 @Composable
 fun EditNameDialog(
@@ -47,6 +51,9 @@ fun EditNameDialog(
 ) {
     BackHandler(onBack = onClose)
     val focusRequester = remember { FocusRequester() }
+    var focused by remember { mutableStateOf(false) }
+    val dialogShape = MaterialTheme.appShapes.dialog
+    val fieldShape = MaterialTheme.appShapes.field
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -62,8 +69,8 @@ fun EditNameDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 420.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, MaterialTheme.appShapes.dialog)
-                .background(MaterialTheme.colorScheme.surface, MaterialTheme.appShapes.dialog)
+                .border(2.dp, MaterialTheme.colorScheme.outline, dialogShape)
+                .background(MaterialTheme.colorScheme.surface, dialogShape)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
@@ -77,15 +84,17 @@ fun EditNameDialog(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(MaterialTheme.appShapes.field)
-                        .background(MaterialTheme.colorScheme.error)
+                        .border(2.dp, MaterialTheme.colorScheme.error, fieldShape)
+                        .background(
+                            MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                            fieldShape,
+                        )
                         .padding(12.dp),
                 ) {
                     Text(
                         text = error,
-                        style = MaterialTheme.appTypography.caption,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.onError,
+                        style = MaterialTheme.appTypography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
@@ -96,10 +105,18 @@ fun EditNameDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .clip(MaterialTheme.appShapes.field)
-                    .background(MaterialTheme.appColors.inputField)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.appShapes.field)
+                    .background(MaterialTheme.appColors.inputField, fieldShape)
+                    .border(
+                        width = 2.dp,
+                        color = if (focused) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.appColors.inputBorder
+                        },
+                        shape = fieldShape,
+                    )
                     .focusRequester(focusRequester)
+                    .onFocusChanged { focused = it.isFocused }
                     .padding(horizontal = 16.dp),
                 singleLine = true,
                 textStyle = MaterialTheme.appTypography.heading.copy(color = MaterialTheme.colorScheme.onSurface),
@@ -127,15 +144,19 @@ fun EditNameDialog(
                 DialogButton(
                     text = "BATAL",
                     textColor = MaterialTheme.colorScheme.onSurface,
-                    background = MaterialTheme.colorScheme.surfaceVariant,
+                    background = Color.Transparent,
+                    pressedBackground = MaterialTheme.colorScheme.surfacePressed,
+                    borderColor = MaterialTheme.colorScheme.outline,
                     weight = Modifier.weight(1f),
                     onClick = onClose,
                 )
                 DialogButton(
                     text = "SIMPAN",
-                    textColor = MaterialTheme.colorScheme.onPrimary,
-                    background = MaterialTheme.colorScheme.primary,
+                    textColor = MaterialTheme.colorScheme.onAccent,
+                    background = MaterialTheme.colorScheme.accent,
+                    pressedBackground = MaterialTheme.colorScheme.accentPressed,
                     fontWeight = FontWeight.Black,
+                    diagonal = true,
                     weight = Modifier.weight(1f),
                     onClick = { onEdit(nama) },
                 )

@@ -21,6 +21,7 @@ object NoirTheme {
         onPrimary = Color(0xFF000000),
         secondary = Color(0xFFB0B0B0),
         accent = Color(0xFFE53935),
+        accentPressed = Color(0xFFB71C1C),
         onAccent = Color(0xFFFFFFFF),
         text = Color(0xFFFFFFFF),
         textMuted = Color(0xFFB3B3B3),

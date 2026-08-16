@@ -1,5 +1,10 @@
 package com.sanxmon.ceki.ui.screen
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,9 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -35,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,6 +60,7 @@ import com.sanxmon.ceki.ui.component.ThemeSelectorSheet
 import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appShapes
 import com.sanxmon.ceki.ui.theme.appTypography
+import com.sanxmon.ceki.ui.theme.blockShadow
 
 private const val CONTENT_BOTTOM_PADDING = 300
 
@@ -119,6 +126,7 @@ fun CekiScreen(
                                     playerName = player.name,
                                     playerScore = player.score,
                                     isSelected = state.selectedPlayerIndex == state.players.indexOf(player),
+                                    largeScore = false,
                                     modifier = Modifier.weight(1f),
                                     onSelect = { viewModel.selectPlayer(state.players.indexOf(player)) },
                                     onLongPress = { viewModel.openActions(state.players.indexOf(player)) },
@@ -145,6 +153,7 @@ fun CekiScreen(
                             playerName = player.name,
                             playerScore = player.score,
                             isSelected = state.selectedPlayerIndex == index,
+                            largeScore = true,
                             modifier = Modifier.fillMaxWidth(),
                             onSelect = { viewModel.selectPlayer(index) },
                             onLongPress = { viewModel.openActions(index) },
@@ -167,7 +176,7 @@ fun CekiScreen(
                         color = bottomBarDividerColor,
                         start = Offset(0f, 0f),
                         end = Offset(size.width, 0f),
-                        strokeWidth = 1.dp.toPx(),
+                        strokeWidth = 2.dp.toPx(),
                     )
                 }
                 .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets(bottom = 12.dp)))
@@ -191,11 +200,15 @@ fun CekiScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ControlButton(
-                    icon = {
+                    icon = { pressed ->
                         Icon(
                             imageVector = Icons.Filled.Remove,
                             contentDescription = "Kurangi",
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = if (pressed) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                             modifier = Modifier.size(30.dp),
                         )
                     },
@@ -221,40 +234,29 @@ fun CekiScreen(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
-                                    .clip(CircleShape)
                                     .background(MaterialTheme.colorScheme.primary)
-                                    .padding(horizontal = 12.dp, vertical = 3.dp),
+                                    .padding(horizontal = 12.dp, vertical = 4.dp),
                                 style = MaterialTheme.appTypography.label,
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(MaterialTheme.appShapes.card)
-                            .background(MaterialTheme.colorScheme.background)
-                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.appShapes.card),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = if (state.scoreInput.isEmpty()) "0" else state.scoreInput,
-                            style = MaterialTheme.appTypography.scoreSmall,
-                            color = if (state.scoreInput.isEmpty()) {
-                                MaterialTheme.appColors.textFaint
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                        )
-                    }
+                    ScoreDisplay(
+                        text = if (state.scoreInput.isEmpty()) "0" else state.scoreInput,
+                        showCursor = state.scoreInput.isNotEmpty(),
+                    )
                 }
 
                 ControlButton(
-                    icon = {
+                    icon = { pressed ->
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = "Tambah",
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = if (pressed) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                             modifier = Modifier.size(30.dp),
                         )
                     },
@@ -325,11 +327,55 @@ fun CekiScreen(
     }
 }
 
+/** Score input display: sharp border, thin blinking cursor while typing. */
+@Composable
+private fun ScoreDisplay(
+    text: String,
+    showCursor: Boolean,
+) {
+    val cursorAlpha by rememberInfiniteTransition().animateFloat(
+        initialValue = 0.2f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(500), RepeatMode.Reverse),
+        label = "scoreCursor",
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background, MaterialTheme.appShapes.card)
+            .border(2.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.appShapes.card),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = text,
+                style = MaterialTheme.appTypography.scoreSmall,
+                color = if (text == "0") {
+                    MaterialTheme.appColors.textFaint
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+            )
+            if (showCursor) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .width(2.dp)
+                        .height(28.dp)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = cursorAlpha)),
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun PlayerCardRowItem(
     playerName: String,
     playerScore: Int,
     isSelected: Boolean,
+    largeScore: Boolean,
     modifier: Modifier,
     onSelect: () -> Unit,
     onLongPress: () -> Unit,
@@ -338,15 +384,17 @@ private fun PlayerCardRowItem(
         nama = playerName,
         skor = playerScore,
         isSelected = isSelected,
+        largeScore = largeScore,
         modifier = modifier,
         onSelect = onSelect,
         onLongPress = onLongPress,
     )
 }
 
+/** Square +/- control: hard border, inverts to the primary color when pressed. */
 @Composable
 private fun ControlButton(
-    icon: @Composable () -> Unit,
+    icon: @Composable (pressed: Boolean) -> Unit,
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
@@ -355,11 +403,23 @@ private fun ControlButton(
         enabled = enabled,
         modifier = Modifier
             .size(52.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-    ) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            icon()
+            .blockShadow()
+            .border(2.dp, MaterialTheme.colorScheme.outlineVariant)
+            .background(MaterialTheme.colorScheme.surfaceElevated),
+    ) { pressed ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    if (pressed && enabled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        Color.Transparent
+                    },
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            icon(pressed && enabled)
         }
     }
 }

@@ -15,21 +15,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,34 +35,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sanxmon.ceki.domain.model.HistoryLog
 import com.sanxmon.ceki.domain.model.HistoryType
 import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appShapes
 import com.sanxmon.ceki.ui.theme.appTypography
 
-private data class BadgeStyle(val label: String, val color: Color)
-
-@Composable
-private fun badgeFor(type: HistoryType): BadgeStyle = when (type) {
-    HistoryType.PLUS -> BadgeStyle("Plus", MaterialTheme.appColors.success)
-    HistoryType.MINUS -> BadgeStyle("Minus", MaterialTheme.colorScheme.error)
-    HistoryType.RESET -> BadgeStyle("Reset", MaterialTheme.appColors.warning)
-    HistoryType.NAME_CHANGE -> BadgeStyle("Nama", MaterialTheme.colorScheme.secondary)
-}
-
 /**
  * Right-side history drawer mirroring `history-drawer.tsx`: overlay tap to close,
- * badge per entry type, name changes rendered old → new.
+ * square badge per entry type, name changes rendered old → new. Entries read as
+ * a log: thin dividers between rows, no per-entry cards.
  */
 @Composable
 fun HistoryDrawer(
@@ -96,8 +85,8 @@ fun HistoryDrawer(
 
         AnimatedVisibility(
             visible = isOpen,
-            enter = slideInHorizontally(tween(250)) { it } + fadeIn(tween(250)),
-            exit = slideOutHorizontally(tween(250)) { it } + fadeOut(tween(250)),
+            enter = slideInHorizontally(tween(200)) { it },
+            exit = slideOutHorizontally(tween(200)) { it },
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight(),
@@ -111,32 +100,43 @@ fun HistoryDrawer(
                     .drawBehind {
                         drawLine(
                             color = drawerDividerColor,
-                            start = Offset(1.dp.toPx(), 0f),
-                            end = Offset(1.dp.toPx(), size.height),
-                            strokeWidth = 1.dp.toPx(),
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = 2.dp.toPx(),
                         )
                     },
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 18.dp),
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Log History",
-                        style = MaterialTheme.appTypography.title.copy(fontStyle = FontStyle.Italic),
+                        style = MaterialTheme.appTypography.title,
                         color = MaterialTheme.colorScheme.primary,
                     )
                     CekiPressable(
                         onClick = onClose,
                         modifier = Modifier
                             .size(32.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                    ) {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            .border(2.dp, MaterialTheme.colorScheme.outlineVariant)
+                            .background(MaterialTheme.colorScheme.surfaceElevated),
+                    ) { pressed ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    if (pressed) {
+                                        MaterialTheme.colorScheme.surfacePressed
+                                    } else {
+                                        Color.Transparent
+                                    },
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = "Tutup",
@@ -149,30 +149,18 @@ fun HistoryDrawer(
 
                 if (history.isEmpty()) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Filled.History,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(40.dp),
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = "Belum ada aktivitas",
-                                style = MaterialTheme.appTypography.body,
-                                fontStyle = FontStyle.Italic,
-                                color = MaterialTheme.appColors.textFaint,
-                            )
-                        }
+                        Text(
+                            text = "Belum ada aktivitas",
+                            style = MaterialTheme.appTypography.handwriting,
+                            color = MaterialTheme.appColors.textMuted,
+                        )
                     }
                 } else {
                     Column(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                            .verticalScroll(rememberScrollState()),
                     ) {
                         history.forEach { log ->
                             HistoryLogItem(log)
@@ -186,48 +174,34 @@ fun HistoryDrawer(
 
 @Composable
 private fun HistoryLogItem(log: HistoryLog) {
+    val dividerColor = MaterialTheme.colorScheme.outline
     val badge = badgeFor(log.type)
-    val accentColor = MaterialTheme.colorScheme.primary
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.appShapes.card)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
             .drawBehind {
                 drawLine(
-                    color = accentColor,
-                    start = Offset(2.dp.toPx(), 0f),
-                    end = Offset(2.dp.toPx(), size.height),
-                    strokeWidth = 4.dp.toPx(),
+                    color = dividerColor,
+                    start = Offset(0f, size.height - 1.dp.toPx()),
+                    end = Offset(size.width, size.height - 1.dp.toPx()),
+                    strokeWidth = 1.dp.toPx(),
                 )
             }
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            HistoryBadge(log.type)
             Text(
                 text = log.timestamp,
                 style = MaterialTheme.appTypography.label,
                 color = MaterialTheme.appColors.textFaint,
             )
-            Row(
-                modifier = Modifier
-                    .border(1.dp, badge.color, MaterialTheme.appShapes.badge)
-                    .clip(MaterialTheme.appShapes.badge)
-                    .background(badge.color.copy(alpha = 0.2f))
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
-            ) {
-                Text(
-                    text = badge.label,
-                    style = MaterialTheme.appTypography.label,
-                    color = badge.color,
-                )
-            }
         }
 
         if (log.type == HistoryType.NAME_CHANGE) {
@@ -290,6 +264,49 @@ private fun HistoryLogItem(log: HistoryLog) {
                     },
                 )
             }
+        }
+    }
+}
+
+private data class BadgeStyle(
+    val color: Color,
+    val text: String? = null,
+    val icon: ImageVector? = null,
+)
+
+@Composable
+private fun badgeFor(type: HistoryType): BadgeStyle = when (type) {
+    HistoryType.PLUS -> BadgeStyle(color = MaterialTheme.appColors.success, text = "+")
+    HistoryType.MINUS -> BadgeStyle(color = MaterialTheme.colorScheme.error, text = "−")
+    HistoryType.RESET -> BadgeStyle(color = MaterialTheme.colorScheme.error, icon = Icons.Filled.RestartAlt)
+    HistoryType.NAME_CHANGE -> BadgeStyle(color = MaterialTheme.appColors.textMuted, icon = Icons.Filled.Edit)
+}
+
+/** Square badge per entry type — sharp corners, dim fill, no rounded pills. */
+@Composable
+private fun HistoryBadge(type: HistoryType) {
+    val badge = badgeFor(type)
+
+    Box(
+        modifier = Modifier
+            .size(22.dp)
+            .border(1.dp, badge.color, MaterialTheme.appShapes.badge)
+            .background(badge.color.copy(alpha = 0.15f), MaterialTheme.appShapes.badge),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (badge.icon != null) {
+            Icon(
+                imageVector = badge.icon,
+                contentDescription = null,
+                tint = badge.color,
+                modifier = Modifier.size(13.dp),
+            )
+        } else {
+            Text(
+                text = badge.text.orEmpty(),
+                style = MaterialTheme.appTypography.label.copy(fontSize = 13.sp, letterSpacing = 0.sp),
+                color = badge.color,
+            )
         }
     }
 }

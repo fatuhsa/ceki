@@ -37,7 +37,7 @@ work, no notifications, no Bluetooth.
 | 16 | History drawer (right-side, overlay tap to close, badge per type) | `history-drawer.tsx` | `ui/component/HistoryDrawer.kt` (custom animated overlay) |
 | 17 | Header (title, view toggle, history button; double-tap title arms "GAME BARU?") | `ceki-header.tsx` | `ui/component/CekiHeader.kt` |
 | 18 | Haptics (light on press, medium on long-press) | `ceki-pressable.tsx`, `player-card.tsx` | `ui/component/CekiPressable.kt` via `View.performHapticFeedback` (`KEYBOARD_TAP` / `LONG_PRESS`) |
-| 19 | Custom dark palette | `constants/ceki-theme.ts` | `ui/theme/CekiColors.kt` (identical hex values) |
+| 19 | Custom dark palette | `constants/ceki-theme.ts` | `ui/theme/` per-theme color tokens (design-system roles: Base/Surface/Accent/Danger/Border) |
 | 20 | MaterialIcons glyphs | `@expo/vector-icons` | `material-icons-extended` (Compose) |
 | 21 | Status bar / safe areas | `expo-status-bar`, `react-native-safe-area-context` | `enableEdgeToEdge` + Compose `WindowInsets` (`statusBarsPadding`, `navigationBarsPadding`) |
 | 22 | Splash background | `expo-splash-screen` (#001736) | `themes.xml` `windowBackground` = #001736 |
@@ -111,6 +111,26 @@ A generic multi-theme system lives in `ui/theme/`:
   color previews, selected indicator, instant apply without restart.
 - All components read colors/typography/shapes from theme tokens — no
   hardcoded colors in screens.
+
+## 5c. Editorial design system (visual language)
+
+The whole UI follows one editorial/magazine visual language across all themes:
+
+- **Typography**: Archivo Black (display: scores/titles), Inter (body, tabular
+  figures via `tnum`), Caveat (handwritten accent, sparingly — history empty state).
+  Fonts are bundled in `app/src/main/res/font/` (SIL OFL 1.1, licenses in
+  `licenses/fonts/`).
+- **Shapes**: 0dp radius everywhere; 2dp borders (3dp selected); one diagonal cut
+  (`DiagonalCut`, 12% bottom-right) on primary buttons; player cards stay sharp.
+- **Elevation**: `blockShadow` — hard offset shadow replacing Material elevation.
+- **Color discipline**: per-theme accent; red (error token) reserved for
+  danger/reset; `accentPressed` token for pressed accent states.
+- **Motion**: 120–200ms tweens, `FastOutSlowIn`; keypad instant invert (0ms) +
+  100ms fade back; drawer/sheet pure slide 200ms; nothing over 250ms; haptics
+  `TextHandleMove` (tap) / `LongPress` (long-press).
+- **State system**: normal (2dp border) / selected (3dp accent border + tinted bg,
+  120ms color animation) / error (danger border + translucent danger box) / empty
+  (handwritten text, no illustration) / input-active (blinking cursor).
 
 ## 6. Architecture
 

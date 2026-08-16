@@ -28,10 +28,11 @@ class ThemeRegistryTest {
     fun themesHaveDistinctVisualIdentity() {
         val themes = ThemeManager.THEMES
 
-        // Backgrounds, primaries and accents are pairwise distinct.
+        // Backgrounds, primaries, accents and pressed accents are pairwise distinct.
         assertEquals(3, themes.map { it.colors.background }.toSet().size)
         assertEquals(3, themes.map { it.colors.primary }.toSet().size)
         assertEquals(3, themes.map { it.colors.accent }.toSet().size)
+        assertEquals(3, themes.map { it.colors.accentPressed }.toSet().size)
         // Dark vs light intent matches the design.
         assertTrue(MidnightTheme.colors.isDark)
         assertTrue(!GoldenTheme.colors.isDark)

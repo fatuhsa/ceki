@@ -5,6 +5,11 @@ import androidx.compose.ui.graphics.Color
 /**
  * Central color tokens for one theme. Every screen and component derives its
  * colors from these tokens — no color is hardcoded outside this package.
+ *
+ * Roles follow the editorial design system: Base/Surface/SurfaceRaised map to
+ * [background]/[surface]/[surfaceElevated], Accent maps to [accent] (with a
+ * pressed variant [accentPressed]), Danger maps to [error], Border maps to
+ * [divider] / [inputBorder].
  */
 data class ThemeColors(
     val isDark: Boolean,
@@ -25,6 +30,8 @@ data class ThemeColors(
     val secondary: Color,
     /** Accent color for highlights and emphasis. */
     val accent: Color,
+    /** Dimmed variant of the accent, used for pressed states. */
+    val accentPressed: Color,
     val onAccent: Color,
     /** Primary text. */
     val text: Color,

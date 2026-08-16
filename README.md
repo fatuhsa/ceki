@@ -26,6 +26,27 @@ mapping and the definition of done.
   **Midnight** (dark blue/cyan), **Golden** (light warm gold) and **Noir**
   (black/white/red). The choice is persisted and applied without restarting.
 
+## UI design system
+
+High-energy editorial/magazine style, adapted for fast reading mid-game (glanceable
+scores, instant feedback):
+
+- **Typography** — Archivo Black for display (scores, titles), Inter for body/labels
+  (with tabular figures so digits never shift width), Caveat for a handwritten accent
+  used sparingly. All fonts are open source (SIL OFL 1.1); licenses live in
+  `licenses/fonts/`, binaries in `app/src/main/res/font/`.
+- **Shapes** — 0dp radius everywhere, sharp 2dp borders (3dp when selected), and one
+  diagonal cut (12% bottom-right) reused on primary buttons.
+- **Elevation** — hard offset block shadows instead of Material blur elevation.
+- **Color discipline** — one accent per theme; red is reserved for danger/reset, never
+  decorative.
+- **Motion** — snappy 120–200ms tweens; keypad keys invert instantly on press and fade
+  back in 100ms; nothing animates longer than 250ms.
+
+Every component reads color/typography/shape tokens from the active theme — no color is
+hardcoded in screens. All three themes (Midnight/Golden/Noir) share this visual
+language while keeping their own accent identities.
+
 ## Install (end users)
 
 Android APKs are published on the **Releases** page of this repository:
@@ -88,6 +109,7 @@ keystore:
 
 - Kotlin 2.3 + Jetpack Compose (Material 3), theme system in `ui/theme/`
   (`AppTheme`, `ThemeManager`, DataStore-persisted selection)
+- Bundled fonts (Archivo Black / Inter / Caveat, OFL) in `app/src/main/res/font/`
 - Gradle 8.14 + version catalog (`gradle/libs.versions.toml`), wrapper committed
 - Android Gradle Plugin 8.13, JDK 17, compile/target SDK 36, min SDK 26
 - `SharedPreferences` via a `KeyValueStore` abstraction for game persistence;
@@ -101,6 +123,8 @@ app/src/main/java/com/sanxmon/ceki/
 ├── ui/            # Compose: screen, components, navigation, theme
 ├── domain/        # models, repository interface, use cases (rules)
 └── data/          # repository impl + local persistence (SharedPreferences/JSON)
+app/src/main/res/font/  # bundled fonts (Archivo Black, Inter, Caveat)
+licenses/fonts/         # SIL OFL 1.1 licenses for the bundled fonts
 .github/workflows/ # CI + Release pipelines
 docs/              # rewrite audit & feature mapping
 ```

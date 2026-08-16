@@ -21,6 +21,7 @@ object MidnightTheme {
         onPrimary = Color(0xFF001736),
         secondary = Color(0xFF89B4FA),
         accent = Color(0xFF7DCFFF),
+        accentPressed = Color(0xFF4FA8DE),
         onAccent = Color(0xFF001736),
         text = Color(0xFFCDD6F4),
         textMuted = Color(0xFFB3BCE0),

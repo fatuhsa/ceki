@@ -1,6 +1,5 @@
 package com.sanxmon.ceki.ui.component
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,11 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 /**
- * Pressable wrapper mirroring the original `CekiPressable.tsx`: haptic tick on
- * press, subtle scale/alpha feedback, disabled state dimming.
+ * Pressable wrapper mirroring the original `CekiPressable.tsx`: light haptic on
+ * press, long-press haptic, subtle scale/alpha feedback and a [pressed] flag
+ * passed to content so components can swap colors instantly (e.g. keypad keys).
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -24,21 +25,23 @@ fun CekiPressable(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit,
+    scaleOnPress: Boolean = true,
+    dimOnPress: Boolean = true,
+    content: @Composable (pressed: Boolean) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
-    val view = LocalView.current
+    val haptic = LocalHapticFeedback.current
 
     Box(
         modifier = modifier
             .graphicsLayer {
                 val pressedActive = pressed && enabled
-                scaleX = if (pressedActive) 0.97f else 1f
-                scaleY = if (pressedActive) 0.97f else 1f
+                scaleX = if (pressedActive && scaleOnPress) 0.97f else 1f
+                scaleY = if (pressedActive && scaleOnPress) 0.97f else 1f
                 alpha = when {
                     !enabled -> 0.3f
-                    pressedActive -> 0.8f
+                    pressedActive && dimOnPress -> 0.8f
                     else -> 1f
                 }
             }
@@ -47,17 +50,17 @@ fun CekiPressable(
                 indication = null,
                 enabled = enabled,
                 onClick = {
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onClick()
                 },
                 onLongClick = onLongClick?.let { longClick ->
                     {
-                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         longClick()
                     }
                 },
             ),
     ) {
-        content()
+        content(pressed && enabled)
     }
 }

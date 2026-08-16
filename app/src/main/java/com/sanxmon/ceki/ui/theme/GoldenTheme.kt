@@ -21,6 +21,7 @@ object GoldenTheme {
         onPrimary = Color(0xFF241A00),
         secondary = Color(0xFFE08700),
         accent = Color(0xFFFFD54A),
+        accentPressed = Color(0xFFD99E00),
         onAccent = Color(0xFF3A2A00),
         text = Color(0xFF211B10),
         textMuted = Color(0xFF6B6048),

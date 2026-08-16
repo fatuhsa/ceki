@@ -3,11 +3,26 @@ package com.sanxmon.ceki.ui.theme
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
+import androidx.compose.ui.graphics.GenericShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
 /**
- * Shape tokens for one theme. Components reference these instead of
- * hardcoding corner radii.
+ * The single diagonal cut used across the design system: a straight edge that
+ * trims 12% off the bottom-right corner. Reused on primary buttons and header
+ * accents; player cards keep sharp straight corners for fast re-reading.
+ */
+val DiagonalCut: Shape = GenericShape { size, _ ->
+    moveTo(0f, 0f)
+    lineTo(size.width, 0f)
+    lineTo(size.width, size.height * 0.88f)
+    lineTo(0f, size.height)
+    close()
+}
+
+/**
+ * Shape tokens for one theme. The editorial style uses 0dp radius everywhere —
+ * sharp corners, 2dp borders, thick selected borders.
  */
 data class ThemeShapes(
     val card: CornerBasedShape,
@@ -28,11 +43,11 @@ data class ThemeShapes(
 
 /** Baseline shapes shared by all themes (themes may override). */
 val DefaultCekiShapes = ThemeShapes(
-    card = RoundedCornerShape(16.dp),
-    dialog = RoundedCornerShape(24.dp),
-    button = RoundedCornerShape(16.dp),
-    key = RoundedCornerShape(12.dp),
-    field = RoundedCornerShape(14.dp),
-    badge = RoundedCornerShape(6.dp),
-    sheetTop = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+    card = RoundedCornerShape(0.dp),
+    dialog = RoundedCornerShape(0.dp),
+    button = RoundedCornerShape(0.dp),
+    key = RoundedCornerShape(0.dp),
+    field = RoundedCornerShape(0.dp),
+    badge = RoundedCornerShape(0.dp),
+    sheetTop = RoundedCornerShape(0.dp),
 )

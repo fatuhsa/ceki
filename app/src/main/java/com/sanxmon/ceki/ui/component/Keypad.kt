@@ -3,6 +3,7 @@ package com.sanxmon.ceki.ui.component
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -78,7 +79,8 @@ private fun KeypadKey(
     val onSurface = MaterialTheme.colorScheme.onSurface
     val normalBg = MaterialTheme.appColors.surfaceElevated
 
-    val bg = remember { Animatable(normalBg) }
+    // 0 = normal, 1 = pressed: snap to accent instantly, fade back in 100ms.
+    val press = remember { Animatable(0f) }
 
     CekiPressable(
         onClick = onClick,
@@ -86,17 +88,18 @@ private fun KeypadKey(
         dimOnPress = false,
         modifier = modifier.height(48.dp),
     ) { pressed ->
-        LaunchedEffect(pressed, accent, normalBg) {
+        LaunchedEffect(pressed) {
             if (pressed) {
-                bg.snapTo(accent)
+                press.snapTo(1f)
             } else {
-                bg.animateTo(normalBg, animationSpec = tween(100))
+                press.animateTo(0f, animationSpec = tween(100))
             }
         }
+        val bg = lerp(normalBg, accent, press.value)
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(bg.value),
+                .background(bg),
             contentAlignment = Alignment.Center,
         ) {
             Text(

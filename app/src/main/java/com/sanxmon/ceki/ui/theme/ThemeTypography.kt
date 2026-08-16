@@ -4,7 +4,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.sanxmon.ceki.R
@@ -20,21 +19,18 @@ private val DisplayFont = FontFamily(
  * Handwritten accent font, used sparingly: Caveat Bold (variable wght axis).
  */
 private val AccentFont = FontFamily(
-    Font(
-        R.font.caveat,
-        weight = FontWeight.Bold,
-        variationSettings = FontVariation.Settings(FontVariation.weight(700f)),
-    ),
+    Font(R.font.caveat, weight = FontWeight.Bold),
 )
 
 /**
- * Body font: Inter (variable wght 400/600/700). Numeric styles request tabular
- * figures (`tnum`) so digits never shift width while scores change.
+ * Body font: Inter (variable wght 400/600/700). Android applies the wght axis
+ * from the declared weight; numeric styles also request tabular figures
+ * (`tnum`) so digits never shift width while scores change.
  */
 private val BodyFont = FontFamily(
-    Font(R.font.inter, weight = FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.weight(400f))),
-    Font(R.font.inter, weight = FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.weight(600f))),
-    Font(R.font.inter, weight = FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.weight(700f))),
+    Font(R.font.inter, weight = FontWeight.Normal),
+    Font(R.font.inter, weight = FontWeight.SemiBold),
+    Font(R.font.inter, weight = FontWeight.Bold),
 )
 
 /**

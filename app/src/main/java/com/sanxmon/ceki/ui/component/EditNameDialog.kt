@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,12 +26,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.sanxmon.ceki.ui.theme.CekiColors
+import com.sanxmon.ceki.ui.theme.appColors
+import com.sanxmon.ceki.ui.theme.appShapes
+import com.sanxmon.ceki.ui.theme.appTypography
 
 /**
  * Rename dialog mirroring `edit-modal.tsx`: auto-focused input, inline error box,
@@ -55,44 +55,37 @@ fun EditNameDialog(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(CekiColors.Crust),
+            .background(MaterialTheme.colorScheme.scrim),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 420.dp)
-                .border(2.dp, CekiColors.Primary, RoundedCornerShape(20.dp))
-                .background(CekiColors.Mantle, RoundedCornerShape(20.dp))
+                .border(2.dp, MaterialTheme.colorScheme.primary, MaterialTheme.appShapes.dialog)
+                .background(MaterialTheme.colorScheme.surface, MaterialTheme.appShapes.dialog)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
             Text(
                 text = "GANTI NAMA",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = (-0.5).sp,
-                ),
-                color = CekiColors.Primary,
+                style = MaterialTheme.appTypography.title,
+                color = MaterialTheme.colorScheme.primary,
             )
 
             if (error != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(CekiColors.Red)
+                        .clip(MaterialTheme.appShapes.field)
+                        .background(MaterialTheme.colorScheme.error)
                         .padding(12.dp),
                 ) {
                     Text(
                         text = error,
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp,
-                        ),
-                        color = CekiColors.Crust,
+                        style = MaterialTheme.appTypography.caption,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.onError,
                     )
                 }
             }
@@ -103,18 +96,14 @@ fun EditNameDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(CekiColors.Surface0)
-                    .border(1.dp, CekiColors.Surface1, RoundedCornerShape(14.dp))
+                    .clip(MaterialTheme.appShapes.field)
+                    .background(MaterialTheme.appColors.inputField)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.appShapes.field)
                     .focusRequester(focusRequester)
                     .padding(horizontal = 16.dp),
                 singleLine = true,
-                textStyle = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = CekiColors.Text,
-                ),
-                cursorBrush = SolidColor(CekiColors.Primary),
+                textStyle = MaterialTheme.appTypography.heading.copy(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onEdit(nama) }),
                 decorationBox = { innerTextField ->
@@ -122,8 +111,8 @@ fun EditNameDialog(
                         if (nama.isEmpty()) {
                             Text(
                                 text = "Masukkan nama...",
-                                fontSize = 18.sp,
-                                color = CekiColors.Subtext0,
+                                style = MaterialTheme.appTypography.heading,
+                                color = MaterialTheme.appColors.textFaint,
                             )
                         }
                         innerTextField()
@@ -137,15 +126,16 @@ fun EditNameDialog(
             ) {
                 DialogButton(
                     text = "BATAL",
-                    textColor = CekiColors.Text,
-                    background = CekiColors.Surface0,
+                    textColor = MaterialTheme.colorScheme.onSurface,
+                    background = MaterialTheme.colorScheme.surfaceVariant,
                     weight = Modifier.weight(1f),
                     onClick = onClose,
                 )
                 DialogButton(
                     text = "SIMPAN",
-                    textColor = CekiColors.Base,
-                    background = CekiColors.Primary,
+                    textColor = MaterialTheme.colorScheme.onPrimary,
+                    background = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Black,
                     weight = Modifier.weight(1f),
                     onClick = { onEdit(nama) },
                 )

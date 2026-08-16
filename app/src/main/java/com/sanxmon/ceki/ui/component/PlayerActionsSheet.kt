@@ -18,18 +18,17 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.sanxmon.ceki.ui.theme.CekiColors
+import com.sanxmon.ceki.ui.theme.appShapes
+import com.sanxmon.ceki.ui.theme.appTypography
 
 /**
  * Bottom sheet mirroring `player-actions-modal.tsx`: shows the tapped player and
@@ -46,15 +45,15 @@ fun PlayerActionsSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onClose,
-        containerColor = CekiColors.Mantle,
-        scrimColor = CekiColors.Crust,
+        containerColor = MaterialTheme.colorScheme.surface,
+        scrimColor = MaterialTheme.colorScheme.scrim,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(CekiColors.Surface2),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest),
             )
         },
     ) {
@@ -79,34 +78,21 @@ fun PlayerActionsSheet(
                 ) {
                     Text(
                         text = "Pemain",
-                        style = TextStyle(
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp,
-                        ),
-                        color = CekiColors.Subtext1,
+                        style = MaterialTheme.appTypography.label,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
                         text = playerName,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = TextStyle(
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-0.5).sp,
-                        ),
-                        color = CekiColors.Text,
+                        style = MaterialTheme.appTypography.heading,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
                 Text(
                     text = "$playerScore",
-                    style = TextStyle(
-                        fontSize = 40.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-1).sp,
-                        fontFeatureSettings = "tnum",
-                    ),
-                    color = CekiColors.Primary,
+                    style = MaterialTheme.appTypography.scoreLarge,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
 
@@ -115,18 +101,21 @@ fun PlayerActionsSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CekiColors.Surface0),
+                    .clip(MaterialTheme.appShapes.button)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
             ) {
-                SheetActionRow(icon = { Icon(Icons.Filled.Edit, null, tint = CekiColors.Primary, modifier = Modifier.size(20.dp)) }) {
+                SheetActionRow(icon = {
+                    Icon(
+                        Icons.Filled.Edit,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }) {
                     Text(
                         text = "GANTI NAMA",
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 0.5.sp,
-                        ),
-                        color = CekiColors.Primary,
+                        style = MaterialTheme.appTypography.button,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
@@ -138,18 +127,21 @@ fun PlayerActionsSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(CekiColors.Red),
+                    .clip(MaterialTheme.appShapes.button)
+                    .background(MaterialTheme.colorScheme.error),
             ) {
-                SheetActionRow(icon = { Icon(Icons.Filled.RestartAlt, null, tint = CekiColors.Base, modifier = Modifier.size(20.dp)) }) {
+                SheetActionRow(icon = {
+                    Icon(
+                        Icons.Filled.RestartAlt,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onError,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }) {
                     Text(
                         text = "RESET SKOR",
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 0.5.sp,
-                        ),
-                        color = CekiColors.Base,
+                        style = MaterialTheme.appTypography.button,
+                        color = MaterialTheme.colorScheme.onError,
                     )
                 }
             }

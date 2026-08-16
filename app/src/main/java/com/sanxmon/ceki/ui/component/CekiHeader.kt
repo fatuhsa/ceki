@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,24 +26,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.sanxmon.ceki.domain.model.ViewMode
-import com.sanxmon.ceki.ui.theme.CekiColors
+import com.sanxmon.ceki.ui.theme.appTypography
 import kotlinx.coroutines.delay
 
 /**
  * Header mirroring `ceki-header.tsx`: title (double-tap arms "GAME BARU?" for 3s),
- * view-mode toggle and history button.
+ * view-mode toggle, history button and theme/appearance button.
  */
 @Composable
 fun CekiHeader(
     viewMode: ViewMode,
     onToggleView: () -> Unit,
     onToggleHistory: () -> Unit,
+    onOpenAppearance: () -> Unit,
     onNewGame: () -> Unit,
 ) {
     var armed by remember { mutableStateOf(false) }
@@ -56,10 +56,10 @@ fun CekiHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(CekiColors.Mantle)
+            .background(MaterialTheme.colorScheme.surface)
             .drawBehind {
                 drawLine(
-                    color = CekiColors.Surface0,
+                    color = MaterialTheme.colorScheme.outline,
                     start = Offset(0f, size.height - 1.dp.toPx()),
                     end = Offset(size.width, size.height - 1.dp.toPx()),
                     strokeWidth = 1.dp.toPx(),
@@ -83,12 +83,8 @@ fun CekiHeader(
                 text = if (armed) "KLIK: GAME BARU?" else "Ceki",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = (-0.5).sp,
-                ),
-                color = if (armed) CekiColors.Red else CekiColors.Primary,
+                style = MaterialTheme.appTypography.title,
+                color = if (armed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             )
         }
 
@@ -105,7 +101,7 @@ fun CekiHeader(
                 Icon(
                     imageVector = if (viewMode == ViewMode.GRID) Icons.Filled.ViewList else Icons.Filled.ViewModule,
                     contentDescription = "Ubah tampilan",
-                    tint = CekiColors.Subtext0,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -118,7 +114,20 @@ fun CekiHeader(
                 Icon(
                     imageVector = Icons.Filled.History,
                     contentDescription = "Riwayat",
-                    tint = CekiColors.Subtext0,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+            CekiPressable(
+                onClick = onOpenAppearance,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Palette,
+                    contentDescription = "Tema",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                 )
             }

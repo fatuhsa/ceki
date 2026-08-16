@@ -20,12 +20,12 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,12 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sanxmon.ceki.domain.model.ViewMode
 import com.sanxmon.ceki.ui.CekiUiState
@@ -53,7 +50,10 @@ import com.sanxmon.ceki.ui.component.HistoryDrawer
 import com.sanxmon.ceki.ui.component.Keypad
 import com.sanxmon.ceki.ui.component.PlayerActionsSheet
 import com.sanxmon.ceki.ui.component.PlayerCard
-import com.sanxmon.ceki.ui.theme.CekiColors
+import com.sanxmon.ceki.ui.component.ThemeSelectorSheet
+import com.sanxmon.ceki.ui.theme.appColors
+import com.sanxmon.ceki.ui.theme.appShapes
+import com.sanxmon.ceki.ui.theme.appTypography
 
 private const val CONTENT_BOTTOM_PADDING = 300
 
@@ -67,7 +67,8 @@ fun CekiApp() {
 
 /**
  * Main game screen mirroring `app/index.tsx`: header, player cards, floating
- * bottom bar with score controls and keypad, plus modal overlays.
+ * bottom bar with score controls and keypad, plus modal overlays. All colors
+ * come from the active theme.
  */
 @Composable
 fun CekiScreen(
@@ -77,7 +78,7 @@ fun CekiScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(CekiColors.Base),
+            .background(MaterialTheme.colorScheme.background),
     ) {
         Column(
             modifier = Modifier
@@ -88,6 +89,7 @@ fun CekiScreen(
                 viewMode = state.viewMode,
                 onToggleView = viewModel::toggleViewMode,
                 onToggleHistory = viewModel::openHistory,
+                onOpenAppearance = viewModel::openAppearance,
                 onNewGame = {
                     viewModel.showConfirm(
                         title = "MULAI GAME BARU?",
@@ -157,11 +159,11 @@ fun CekiScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(CekiColors.Mantle)
+                .clip(MaterialTheme.appShapes.sheetTop)
+                .background(MaterialTheme.colorScheme.surface)
                 .drawBehind {
                     drawLine(
-                        color = CekiColors.Surface0,
+                        color = MaterialTheme.colorScheme.outline,
                         start = Offset(0f, 0f),
                         end = Offset(size.width, 0f),
                         strokeWidth = 1.dp.toPx(),
@@ -176,13 +178,9 @@ fun CekiScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 10.dp),
-                    style = TextStyle(
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 2.sp,
-                    ),
+                    style = MaterialTheme.appTypography.label,
                     textAlign = TextAlign.Center,
-                    color = CekiColors.Red,
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
 
@@ -196,7 +194,7 @@ fun CekiScreen(
                         Icon(
                             imageVector = Icons.Filled.Remove,
                             contentDescription = "Kurangi",
-                            tint = CekiColors.Text,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(30.dp),
                         )
                     },
@@ -222,34 +220,30 @@ fun CekiScreen(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(999.dp))
-                                    .background(CekiColors.Primary)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary)
                                     .padding(horizontal = 12.dp, vertical = 3.dp),
-                                style = TextStyle(
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = 1.sp,
-                                ),
-                                color = CekiColors.Base,
+                                style = MaterialTheme.appTypography.label,
+                                color = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                     }
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(CekiColors.Base)
-                            .border(1.dp, CekiColors.Surface1, RoundedCornerShape(16.dp)),
+                            .clip(MaterialTheme.appShapes.card)
+                            .background(MaterialTheme.colorScheme.background)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.appShapes.card),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = if (state.scoreInput.isEmpty()) "0" else state.scoreInput,
-                            style = TextStyle(
-                                fontSize = 30.sp,
-                                fontWeight = FontWeight.Black,
-                                fontFeatureSettings = "tnum",
-                            ),
-                            color = if (state.scoreInput.isEmpty()) CekiColors.Subtext1 else CekiColors.Text,
+                            style = MaterialTheme.appTypography.scoreSmall,
+                            color = if (state.scoreInput.isEmpty()) {
+                                MaterialTheme.appColors.textFaint
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                         )
                     }
                 }
@@ -259,7 +253,7 @@ fun CekiScreen(
                         Icon(
                             imageVector = Icons.Filled.Add,
                             contentDescription = "Tambah",
-                            tint = CekiColors.Text,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(30.dp),
                         )
                     },
@@ -322,6 +316,12 @@ fun CekiScreen(
             },
         )
     }
+
+    if (state.isAppearanceOpen) {
+        ThemeSelectorSheet(
+            onClose = viewModel::closeAppearance,
+        )
+    }
 }
 
 @Composable
@@ -355,7 +355,7 @@ private fun ControlButton(
         modifier = Modifier
             .size(52.dp)
             .clip(CircleShape)
-            .background(CekiColors.Surface0),
+            .background(MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             icon()

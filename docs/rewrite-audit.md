@@ -95,6 +95,23 @@ work, no notifications, no Bluetooth.
 | Artifact downloadable from GitHub | ✅ uploaded as workflow artifacts / GitHub Release |
 | No local Android environment required | ✅ wrapper + SDK setup fully inside Actions |
 
+## 5b. Theme system (added after rewrite)
+
+A generic multi-theme system lives in `ui/theme/`:
+
+- `AppTheme` (id, display name, `ThemeColors`/`ThemeTypography`/`ThemeShapes` tokens)
+- `ThemeManager` registry (`availableThemes()`, `getTheme()`, `setTheme()`) with
+  three generic themes: **Midnight** (dark blue/cyan), **Golden** (light warm
+  gold), **Noir** (black/white/red). No franchise/IP references anywhere.
+- `ThemeRepository` → `DataStoreThemeRepository` persists `theme_id`
+  (default `midnight`) in DataStore Preferences.
+- `AppThemeProvider` collects the theme flow, maps tokens to Material3
+  `ColorScheme`/`Typography`/`Shapes`, and syncs system-bar icon color.
+- Theme selector: header palette button → appearance sheet with per-theme
+  color previews, selected indicator, instant apply without restart.
+- All components read colors/typography/shapes from theme tokens — no
+  hardcoded colors in screens.
+
 ## 6. Architecture
 
 ```

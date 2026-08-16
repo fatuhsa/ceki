@@ -41,6 +41,7 @@ data class CekiUiState(
     val viewMode: ViewMode = ViewMode.GRID,
     val confirm: ConfirmState? = null,
     val actionPlayerIndex: Int? = null,
+    val isAppearanceOpen: Boolean = false,
 ) {
     val hasSelection: Boolean get() = selectedPlayerIndex != null
     val selectedPlayer: Player? get() = selectedPlayerIndex?.let { players.getOrNull(it) }
@@ -229,6 +230,16 @@ class CekiViewModel(application: Application) : AndroidViewModel(application) {
 
     fun closeActions() {
         _uiState.update { it.copy(actionPlayerIndex = null) }
+    }
+
+    // --- Appearance (theme selector) ---
+
+    fun openAppearance() {
+        _uiState.update { it.copy(isAppearanceOpen = true) }
+    }
+
+    fun closeAppearance() {
+        _uiState.update { it.copy(isAppearanceOpen = false) }
     }
 
     // --- View mode / history drawer ---

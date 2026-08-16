@@ -25,13 +25,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -41,24 +41,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.sanxmon.ceki.domain.model.HistoryLog
 import com.sanxmon.ceki.domain.model.HistoryType
-import com.sanxmon.ceki.ui.theme.CekiColors
+import com.sanxmon.ceki.ui.theme.appColors
+import com.sanxmon.ceki.ui.theme.appShapes
+import com.sanxmon.ceki.ui.theme.appTypography
 
 private data class BadgeStyle(val label: String, val color: Color)
 
+@Composable
 private fun badgeFor(type: HistoryType): BadgeStyle = when (type) {
-    HistoryType.PLUS -> BadgeStyle("Plus", CekiColors.Green)
-    HistoryType.MINUS -> BadgeStyle("Minus", CekiColors.Red)
-    HistoryType.RESET -> BadgeStyle("Reset", CekiColors.Yellow)
-    HistoryType.NAME_CHANGE -> BadgeStyle("Nama", CekiColors.Blue)
+    HistoryType.PLUS -> BadgeStyle("Plus", MaterialTheme.appColors.success)
+    HistoryType.MINUS -> BadgeStyle("Minus", MaterialTheme.colorScheme.error)
+    HistoryType.RESET -> BadgeStyle("Reset", MaterialTheme.appColors.warning)
+    HistoryType.NAME_CHANGE -> BadgeStyle("Nama", MaterialTheme.colorScheme.secondary)
 }
 
 /**
@@ -83,7 +84,7 @@ fun HistoryDrawer(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(CekiColors.Crust)
+                    .background(MaterialTheme.colorScheme.scrim)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -105,10 +106,10 @@ fun HistoryDrawer(
                     .fillMaxWidth(0.82f)
                     .widthIn(max = 340.dp)
                     .fillMaxHeight()
-                    .background(CekiColors.Mantle)
+                    .background(MaterialTheme.colorScheme.surface)
                     .drawBehind {
                         drawLine(
-                            color = CekiColors.Surface0,
+                            color = MaterialTheme.colorScheme.outline,
                             start = Offset(1.dp.toPx(), 0f),
                             end = Offset(1.dp.toPx(), size.height),
                             strokeWidth = 1.dp.toPx(),
@@ -124,26 +125,21 @@ fun HistoryDrawer(
                 ) {
                     Text(
                         text = "Log History",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-0.5).sp,
-                            fontStyle = FontStyle.Italic,
-                        ),
-                        color = CekiColors.Primary,
+                        style = MaterialTheme.appTypography.title.copy(fontStyle = FontStyle.Italic),
+                        color = MaterialTheme.colorScheme.primary,
                     )
                     CekiPressable(
                         onClick = onClose,
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(CekiColors.Surface1),
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                     ) {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = "Tutup",
-                                tint = CekiColors.Subtext0,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -156,15 +152,15 @@ fun HistoryDrawer(
                             Icon(
                                 imageVector = Icons.Filled.History,
                                 contentDescription = null,
-                                tint = CekiColors.Subtext0,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(40.dp),
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = "Belum ada aktivitas",
-                                fontSize = 13.sp,
+                                style = MaterialTheme.appTypography.body,
                                 fontStyle = FontStyle.Italic,
-                                color = CekiColors.Subtext1,
+                                color = MaterialTheme.appColors.textFaint,
                             )
                         }
                     }
@@ -194,11 +190,11 @@ private fun HistoryLogItem(log: HistoryLog) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(CekiColors.Surface0)
+            .clip(MaterialTheme.appShapes.card)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .drawBehind {
                 drawLine(
-                    color = CekiColors.Primary,
+                    color = MaterialTheme.colorScheme.primary,
                     start = Offset(2.dp.toPx(), 0f),
                     end = Offset(2.dp.toPx(), size.height),
                     strokeWidth = 4.dp.toPx(),
@@ -214,27 +210,19 @@ private fun HistoryLogItem(log: HistoryLog) {
         ) {
             Text(
                 text = log.timestamp,
-                style = TextStyle(
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 1.sp,
-                ),
-                color = CekiColors.Subtext1,
+                style = MaterialTheme.appTypography.label,
+                color = MaterialTheme.appColors.textFaint,
             )
             Row(
                 modifier = Modifier
-                    .border(1.dp, badge.color, RoundedCornerShape(6.dp))
-                    .clip(RoundedCornerShape(6.dp))
+                    .border(1.dp, badge.color, MaterialTheme.appShapes.badge)
+                    .clip(MaterialTheme.appShapes.badge)
                     .background(badge.color.copy(alpha = 0.2f))
                     .padding(horizontal = 8.dp, vertical = 2.dp),
             ) {
                 Text(
                     text = badge.label,
-                    style = TextStyle(
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp,
-                    ),
+                    style = MaterialTheme.appTypography.label,
                     color = badge.color,
                 )
             }
@@ -247,24 +235,24 @@ private fun HistoryLogItem(log: HistoryLog) {
             ) {
                 Text(
                     text = log.extra?.oldName.orEmpty(),
-                    fontSize = 13.sp,
+                    style = MaterialTheme.appTypography.bodySmall,
                     fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.LineThrough,
-                    color = CekiColors.Red.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Icon(
                     imageVector = Icons.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = CekiColors.Subtext0,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(14.dp),
                 )
                 Text(
                     text = log.extra?.newName.orEmpty(),
-                    fontSize = 13.sp,
+                    style = MaterialTheme.appTypography.bodySmall,
                     fontWeight = FontWeight.Black,
-                    color = CekiColors.Green,
+                    color = MaterialTheme.appColors.success,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -280,9 +268,9 @@ private fun HistoryLogItem(log: HistoryLog) {
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp),
-                    fontSize = 14.sp,
+                    style = MaterialTheme.appTypography.body,
                     fontWeight = FontWeight.Black,
-                    color = CekiColors.Text,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -292,16 +280,11 @@ private fun HistoryLogItem(log: HistoryLog) {
                         HistoryType.MINUS -> "-${log.amount}"
                         else -> "${log.amount}"
                     },
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-0.5).sp,
-                        fontFeatureSettings = "tnum",
-                    ),
+                    style = MaterialTheme.appTypography.score.copy(fontSize = MaterialTheme.appTypography.score.fontSize * 0.6f),
                     color = when (log.type) {
-                        HistoryType.PLUS -> CekiColors.Green
-                        HistoryType.MINUS -> CekiColors.Red
-                        else -> CekiColors.Yellow
+                        HistoryType.PLUS -> MaterialTheme.appColors.success
+                        HistoryType.MINUS -> MaterialTheme.colorScheme.error
+                        else -> MaterialTheme.appColors.warning
                     },
                 )
             }

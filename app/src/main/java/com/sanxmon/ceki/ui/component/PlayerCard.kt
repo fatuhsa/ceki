@@ -5,17 +5,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.sanxmon.ceki.ui.theme.CekiColors
+import com.sanxmon.ceki.ui.theme.appShapes
+import com.sanxmon.ceki.ui.theme.appTypography
 
 /**
  * Player scorecard mirroring `player-card.tsx`: tap to select, long-press to open
@@ -30,14 +28,21 @@ fun PlayerCard(
     onSelect: () -> Unit,
     onLongPress: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = MaterialTheme.appShapes.card
 
     CekiPressable(
         onClick = onSelect,
         onLongClick = onLongPress,
         modifier = modifier
-            .border(2.dp, if (isSelected) CekiColors.Primary else CekiColors.Surface0, shape)
-            .background(if (isSelected) CekiColors.Primary else CekiColors.Surface0, shape)
+            .border(
+                width = 2.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                shape = shape,
+            )
+            .background(
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                shape = shape,
+            )
             .padding(16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -48,34 +53,25 @@ fun PlayerCard(
             ) {
                 Text(
                     text = "Pemain",
-                    style = TextStyle(
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp,
-                    ),
-                    color = if (isSelected) CekiColors.Base.copy(alpha = 0.6f) else CekiColors.Subtext0,
+                    style = MaterialTheme.appTypography.label,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                 )
                 Text(
                     text = nama,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-0.3).sp,
-                    ),
-                    color = if (isSelected) CekiColors.Base else CekiColors.Text,
+                    style = MaterialTheme.appTypography.heading,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                 )
             }
             Text(
                 text = "$skor",
-                style = TextStyle(
-                    fontSize = 34.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = (-1).sp,
-                    fontFeatureSettings = "tnum",
-                ),
-                color = if (isSelected) CekiColors.Base else CekiColors.Text,
+                style = MaterialTheme.appTypography.score,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
             )
         }
     }

@@ -22,6 +22,9 @@ mapping and the definition of done.
   50 entries.
 - **Autosave** — scores and preferences persist between sessions.
 - **Haptics** — soft feedback on every interaction.
+- **3 themes** — switch appearance instantly from the header (palette icon):
+  **Midnight** (dark blue/cyan), **Golden** (light warm gold) and **Noir**
+  (black/white/red). The choice is persisted and applied without restarting.
 
 ## Install (end users)
 
@@ -83,10 +86,12 @@ keystore:
 
 ## Tech stack
 
-- Kotlin 2.x + Jetpack Compose (Material 3)
-- Gradle 8.9 + version catalog (`gradle/libs.versions.toml`), wrapper committed
-- Android Gradle Plugin 8.7.x, JDK 17, compile/target SDK 35, min SDK 26
-- `SharedPreferences` via a `KeyValueStore` abstraction for persistence
+- Kotlin 2.3 + Jetpack Compose (Material 3), theme system in `ui/theme/`
+  (`AppTheme`, `ThemeManager`, DataStore-persisted selection)
+- Gradle 8.14 + version catalog (`gradle/libs.versions.toml`), wrapper committed
+- Android Gradle Plugin 8.13, JDK 17, compile/target SDK 36, min SDK 26
+- `SharedPreferences` via a `KeyValueStore` abstraction for game persistence;
+  DataStore Preferences for the selected theme
 - GitHub Actions for all builds (`ci.yml`, `release.yml`)
 
 ## Repository layout

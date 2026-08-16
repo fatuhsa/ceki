@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sanxmon.ceki.domain.model.ViewMode
+import com.sanxmon.ceki.ui.AppliedFeedback
 import com.sanxmon.ceki.ui.CekiUiState
 import com.sanxmon.ceki.ui.CekiViewModel
 import com.sanxmon.ceki.ui.component.CekiHeader
@@ -192,6 +193,9 @@ fun CekiScreen(
                 )
             }
 
+            val pendingLabel = state.scoreInput.takeIf { it.isNotEmpty() }?.let { "-$it" }
+            val addLabel = state.scoreInput.takeIf { it.isNotEmpty() }?.let { "+$it" }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -210,6 +214,7 @@ fun CekiScreen(
                             modifier = Modifier.size(30.dp),
                         )
                     },
+                    label = pendingLabel,
                     enabled = state.hasSelection,
                     onClick = { viewModel.handleScoreUpdate(isAddition = false) },
                 )
@@ -240,8 +245,9 @@ fun CekiScreen(
                         }
                     }
                     ScoreDisplay(
-                        text = if (state.scoreInput.isEmpty()) "0" else state.scoreInput,
-                        showCursor = state.scoreInput.isNotEmpty(),
+                        input = state.scoreInput,
+                        applied = state.applied,
+                        hasSelection = state.hasSelection,
                     )
                 }
 
@@ -258,6 +264,7 @@ fun CekiScreen(
                             modifier = Modifier.size(30.dp),
                         )
                     },
+                    label = addLabel,
                     enabled = state.hasSelection,
                     onClick = { viewModel.handleScoreUpdate(isAddition = true) },
                 )
@@ -325,11 +332,15 @@ fun CekiScreen(
     }
 }
 
-/** Score input display: sharp border, thin blinking cursor while typing. */
+/**
+ * Score input display: hint when empty, digits + blinking cursor while typing,
+ * signed value briefly after apply (e.g. "+50"). Sharp 0dp border.
+ */
 @Composable
 private fun ScoreDisplay(
-    text: String,
-    showCursor: Boolean,
+    input: String,
+    applied: AppliedFeedback?,
+    hasSelection: Boolean,
 ) {
     val cursorAlpha by rememberInfiniteTransition().animateFloat(
         initialValue = 0.2f,
@@ -345,24 +356,45 @@ private fun ScoreDisplay(
             .border(2.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.appShapes.card),
         contentAlignment = Alignment.Center,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = text,
-                style = MaterialTheme.appTypography.scoreSmall,
-                color = if (text == "0") {
-                    MaterialTheme.appColors.textFaint
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-            )
-            if (showCursor) {
-                Box(
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .width(2.dp)
-                        .height(28.dp)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = cursorAlpha)),
+        when {
+            applied != null -> {
+                Text(
+                    text = applied.signedLabel,
+                    style = MaterialTheme.appTypography.scoreSmall,
+                    color = MaterialTheme.colorScheme.primary,
                 )
+            }
+
+            input.isNotEmpty() -> {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = input,
+                        style = MaterialTheme.appTypography.scoreSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .width(2.dp)
+                            .height(28.dp)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = cursorAlpha)),
+                    )
+                }
+            }
+
+            else -> {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = if (hasSelection) "KETIK NILAI" else "PILIH PLAYER",
+                        style = MaterialTheme.appTypography.label,
+                        color = MaterialTheme.appColors.textFaint,
+                    )
+                    Text(
+                        text = if (hasSelection) "LALU +/−" else "LALU KETIK NILAI",
+                        style = MaterialTheme.appTypography.label,
+                        color = MaterialTheme.appColors.textFaint,
+                    )
+                }
             }
         }
     }
@@ -389,10 +421,15 @@ private fun PlayerCardRowItem(
     )
 }
 
-/** Square +/- control: hard border, inverts to the primary color when pressed. */
+/**
+ * Square +/- control: hard border, inverts to the primary color when pressed.
+ * While digits are being typed, [label] shows the pending signed value (e.g.
+ * "+50") so the interaction is self-explanatory; otherwise the icon shows.
+ */
 @Composable
 private fun ControlButton(
     icon: @Composable (pressed: Boolean) -> Unit,
+    label: String? = null,
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
@@ -417,7 +454,19 @@ private fun ControlButton(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            icon(pressed && enabled)
+            if (label != null) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.appTypography.button,
+                    color = if (pressed && enabled) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+            } else {
+                icon(pressed && enabled)
+            }
         }
     }
 }

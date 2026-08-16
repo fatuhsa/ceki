@@ -101,7 +101,8 @@ A generic multi-theme system lives in `ui/theme/`:
 
 - `AppTheme` (id, display name, `ThemeColors`/`ThemeTypography`/`ThemeShapes` tokens)
 - `ThemeManager` registry (`availableThemes()`, `getTheme()`, `setTheme()`) with
-  three generic themes: **Midnight** (dark blue/cyan), **Golden** (light warm
+  three generic themes: **Midnight** (near-black with yellow accent + red
+  danger, per the editorial design system palette), **Golden** (light warm
   gold), **Noir** (black/white/red). No franchise/IP references anywhere.
 - `ThemeRepository` → `DataStoreThemeRepository` persists `theme_id`
   (default `midnight`) in DataStore Preferences.

@@ -15,6 +15,8 @@ import com.sanxmon.ceki.domain.repository.GameRepository
 import com.sanxmon.ceki.domain.usecase.HistoryRules
 import com.sanxmon.ceki.domain.usecase.NameRules
 import com.sanxmon.ceki.domain.usecase.ScoreRules
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +28,16 @@ data class ConfirmState(
     val message: String,
     val onConfirm: () -> Unit,
 )
+
+/** Short-lived feedback shown after a score was applied (e.g. "+50" / "-50"). */
+data class AppliedFeedback(
+    val amount: Int,
+    val playerName: String,
+    val isAddition: Boolean,
+) {
+    /** Label like "+50" or "-50", ASCII signs for font safety. */
+    val signedLabel: String get() = (if (isAddition) "+" else "-") + amount
+}
 
 data class CekiUiState(
     val players: List<Player> = defaultPlayers(),
@@ -42,6 +54,7 @@ data class CekiUiState(
     val confirm: ConfirmState? = null,
     val actionPlayerIndex: Int? = null,
     val isAppearanceOpen: Boolean = false,
+    val applied: AppliedFeedback? = null,
 ) {
     val hasSelection: Boolean get() = selectedPlayerIndex != null
     val selectedPlayer: Player? get() = selectedPlayerIndex?.let { players.getOrNull(it) }
@@ -55,6 +68,9 @@ class CekiViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(CekiUiState())
     val uiState: StateFlow<CekiUiState> = _uiState.asStateFlow()
+
+    /** Cancels the auto-hide timer for the applied-score feedback. */
+    private var appliedClearJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -76,11 +92,13 @@ class CekiViewModel(application: Application) : AndroidViewModel(application) {
 
     fun appendDigit(digit: String) {
         if (digit.isEmpty()) return
-        _uiState.update { it.copy(scoreInput = ScoreRules.appendDigit(it.scoreInput, digit.first())) }
+        _uiState.update {
+            it.copy(scoreInput = ScoreRules.appendDigit(it.scoreInput, digit.first()), applied = null)
+        }
     }
 
     fun backspace() {
-        _uiState.update { it.copy(scoreInput = ScoreRules.backspace(it.scoreInput)) }
+        _uiState.update { it.copy(scoreInput = ScoreRules.backspace(it.scoreInput), applied = null) }
     }
 
     // --- Player selection ---
@@ -90,6 +108,7 @@ class CekiViewModel(application: Application) : AndroidViewModel(application) {
             state.copy(
                 selectedPlayerIndex = if (state.selectedPlayerIndex == index) null else index,
                 error = null,
+                applied = null,
             )
         }
     }
@@ -127,10 +146,21 @@ class CekiViewModel(application: Application) : AndroidViewModel(application) {
                 },
                 history = HistoryRules.prepend(it.history, entry),
                 scoreInput = "",
+                applied = AppliedFeedback(value, player.name, isAddition),
                 error = null,
             )
         }
+        scheduleAppliedClear()
         persist()
+    }
+
+    /** Auto-hides the applied-score feedback after 1.4s. */
+    private fun scheduleAppliedClear() {
+        appliedClearJob?.cancel()
+        appliedClearJob = viewModelScope.launch {
+            delay(1400)
+            _uiState.update { it.copy(applied = null) }
+        }
     }
 
     fun resetPlayerScore(index: Int) {
@@ -206,6 +236,7 @@ class CekiViewModel(application: Application) : AndroidViewModel(application) {
                 history = emptyList(),
                 selectedPlayerIndex = null,
                 scoreInput = "",
+                applied = null,
                 error = null,
             )
         }

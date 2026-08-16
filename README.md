@@ -23,7 +23,8 @@ mapping and the definition of done.
 - **Autosave** — scores and preferences persist between sessions.
 - **Haptics** — soft feedback on every interaction.
 - **3 themes** — switch appearance instantly from the header (palette icon):
-  **Midnight** (dark blue/cyan), **Golden** (light warm gold) and **Noir**
+  **Midnight** (near-black with the signature yellow accent + red danger, per
+  the editorial design system), **Golden** (light warm gold) and **Noir**
   (black/white/red). The choice is persisted and applied without restarting.
 
 ## UI design system

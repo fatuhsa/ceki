@@ -358,11 +358,19 @@ private fun ScoreDisplay(
     ) {
         when {
             applied != null -> {
-                Text(
-                    text = applied.signedLabel,
-                    style = MaterialTheme.appTypography.scoreSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+                // Solid primary chip keeps the signed value high-contrast in
+                // every theme (dark gold-on-cream would fail in the light one).
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(horizontal = 14.dp, vertical = 4.dp),
+                ) {
+                    Text(
+                        text = applied.signedLabel,
+                        style = MaterialTheme.appTypography.scoreSmall,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
             }
 
             input.isNotEmpty() -> {

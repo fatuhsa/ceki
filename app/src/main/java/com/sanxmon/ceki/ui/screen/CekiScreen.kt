@@ -126,6 +126,7 @@ fun CekiScreen(
                                     playerName = player.name,
                                     playerScore = player.score,
                                     isSelected = state.selectedPlayerIndex == state.players.indexOf(player),
+                                    horizontal = false,
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight(),

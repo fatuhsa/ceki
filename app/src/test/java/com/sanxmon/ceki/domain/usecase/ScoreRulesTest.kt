@@ -10,9 +10,10 @@ class ScoreRulesTest {
     fun appendDigit_limitsInputToFourDigits() {
         assertEquals("12", ScoreRules.appendDigit("1", '2'))
         assertEquals("1234", ScoreRules.appendDigit("123", '4'))
-        // Fifth digit is rejected.
+        // Fifth digit is rejected: the input stays unchanged.
         assertEquals("1234", ScoreRules.appendDigit("1234", '5'))
-        assertEquals("1234", ScoreRules.appendDigit("12345", '6'))
+        // An input already longer than the cap is left untouched (defensive).
+        assertEquals("12345", ScoreRules.appendDigit("12345", '6'))
     }
 
     @Test

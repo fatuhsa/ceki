@@ -155,6 +155,7 @@ fun CekiScreen(
         }
 
         // Floating bottom bar: error line, +/- controls, score display, keypad.
+        val bottomBarDividerColor = MaterialTheme.colorScheme.outline
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -163,7 +164,7 @@ fun CekiScreen(
                 .background(MaterialTheme.colorScheme.surface)
                 .drawBehind {
                     drawLine(
-                        color = MaterialTheme.colorScheme.outline,
+                        color = bottomBarDividerColor,
                         start = Offset(0f, 0f),
                         end = Offset(size.width, 0f),
                         strokeWidth = 1.dp.toPx(),

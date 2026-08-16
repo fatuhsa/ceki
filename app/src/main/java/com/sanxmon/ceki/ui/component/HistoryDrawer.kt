@@ -73,6 +73,7 @@ fun HistoryDrawer(
     onClose: () -> Unit,
 ) {
     BackHandler(enabled = isOpen, onBack = onClose)
+    val drawerDividerColor = MaterialTheme.colorScheme.outline
 
     Box(Modifier.fillMaxSize()) {
         AnimatedVisibility(
@@ -109,7 +110,7 @@ fun HistoryDrawer(
                     .background(MaterialTheme.colorScheme.surface)
                     .drawBehind {
                         drawLine(
-                            color = MaterialTheme.colorScheme.outline,
+                            color = drawerDividerColor,
                             start = Offset(1.dp.toPx(), 0f),
                             end = Offset(1.dp.toPx(), size.height),
                             strokeWidth = 1.dp.toPx(),
@@ -186,6 +187,7 @@ fun HistoryDrawer(
 @Composable
 private fun HistoryLogItem(log: HistoryLog) {
     val badge = badgeFor(log.type)
+    val accentColor = MaterialTheme.colorScheme.primary
 
     Column(
         modifier = Modifier
@@ -194,7 +196,7 @@ private fun HistoryLogItem(log: HistoryLog) {
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .drawBehind {
                 drawLine(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = accentColor,
                     start = Offset(2.dp.toPx(), 0f),
                     end = Offset(2.dp.toPx(), size.height),
                     strokeWidth = 4.dp.toPx(),

@@ -45,6 +45,7 @@ fun CekiHeader(
     onNewGame: () -> Unit,
 ) {
     var armed by remember { mutableStateOf(false) }
+    val dividerColor = MaterialTheme.colorScheme.outline
 
     LaunchedEffect(armed) {
         if (armed) {
@@ -59,7 +60,7 @@ fun CekiHeader(
             .background(MaterialTheme.colorScheme.surface)
             .drawBehind {
                 drawLine(
-                    color = MaterialTheme.colorScheme.outline,
+                    color = dividerColor,
                     start = Offset(0f, size.height - 1.dp.toPx()),
                     end = Offset(size.width, size.height - 1.dp.toPx()),
                     strokeWidth = 1.dp.toPx(),

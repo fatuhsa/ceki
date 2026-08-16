@@ -2,7 +2,7 @@ package com.sanxmon.ceki.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.CornerBasedShape
 import androidx.compose.ui.unit.dp
 
 /**
@@ -10,13 +10,13 @@ import androidx.compose.ui.unit.dp
  * hardcoding corner radii.
  */
 data class ThemeShapes(
-    val card: Shape,
-    val dialog: Shape,
-    val button: Shape,
-    val key: Shape,
-    val field: Shape,
-    val badge: Shape,
-    val sheetTop: Shape,
+    val card: CornerBasedShape,
+    val dialog: CornerBasedShape,
+    val button: CornerBasedShape,
+    val key: CornerBasedShape,
+    val field: CornerBasedShape,
+    val badge: CornerBasedShape,
+    val sheetTop: CornerBasedShape,
 ) {
     fun toShapes(): Shapes = Shapes(
         small = badge,

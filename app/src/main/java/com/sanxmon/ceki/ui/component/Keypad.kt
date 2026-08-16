@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appTypography
 import com.sanxmon.ceki.ui.theme.blockShadow
 
@@ -72,10 +73,10 @@ private fun KeypadKey(
     modifier: Modifier,
     onClick: () -> Unit,
 ) {
-    val accent = MaterialTheme.colorScheme.accent
-    val onAccent = MaterialTheme.colorScheme.onAccent
+    val accent = MaterialTheme.appColors.accent
+    val onAccent = MaterialTheme.appColors.onAccent
     val onSurface = MaterialTheme.colorScheme.onSurface
-    val normalBg = MaterialTheme.colorScheme.surfaceElevated
+    val normalBg = MaterialTheme.appColors.surfaceElevated
 
     val bg = remember { Animatable(normalBg) }
 
@@ -113,8 +114,8 @@ private fun BackspaceKey(
     onBackspace: () -> Unit,
 ) {
     val error = MaterialTheme.colorScheme.error
-    val surfacePressed = MaterialTheme.colorScheme.surfacePressed
-    val surfaceElevated = MaterialTheme.colorScheme.surfaceElevated
+    val surfacePressed = MaterialTheme.appColors.surfacePressed
+    val surfaceElevated = MaterialTheme.appColors.surfaceElevated
 
     CekiPressable(
         onClick = onBackspace,

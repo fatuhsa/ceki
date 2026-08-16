@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sanxmon.ceki.ui.ConfirmState
 import com.sanxmon.ceki.ui.theme.DiagonalCut
+import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appShapes
 import com.sanxmon.ceki.ui.theme.appTypography
 import com.sanxmon.ceki.ui.theme.blockShadow
@@ -113,7 +114,7 @@ fun ConfirmDialog(
                     text = "BATAL",
                     textColor = MaterialTheme.colorScheme.onSurface,
                     background = Color.Transparent,
-                    pressedBackground = MaterialTheme.colorScheme.surfacePressed,
+                    pressedBackground = MaterialTheme.appColors.surfacePressed,
                     borderColor = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     weight = Modifier.weight(1.25f),

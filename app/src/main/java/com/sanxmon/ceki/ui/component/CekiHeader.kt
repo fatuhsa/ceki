@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sanxmon.ceki.domain.model.ViewMode
+import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appTypography
 import kotlinx.coroutines.delay
 
@@ -130,12 +131,12 @@ private fun HeaderIconButton(
         modifier = Modifier
             .size(40.dp)
             .border(2.dp, MaterialTheme.colorScheme.outlineVariant)
-            .background(MaterialTheme.colorScheme.surfaceElevated),
+            .background(MaterialTheme.appColors.surfaceElevated),
     ) { pressed ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (pressed) MaterialTheme.colorScheme.surfacePressed else Color.Transparent),
+                .background(if (pressed) MaterialTheme.appColors.surfacePressed else Color.Transparent),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

@@ -61,7 +61,7 @@ fun PlayerCard(
         targetValue = if (isSelected) {
             MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
         } else {
-            MaterialTheme.colorScheme.surfaceElevated
+            MaterialTheme.appColors.surfaceElevated
         },
         animationSpec = tween(120),
         label = "playerCardBg",

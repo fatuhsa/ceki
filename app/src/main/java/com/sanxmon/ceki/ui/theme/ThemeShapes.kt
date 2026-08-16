@@ -3,8 +3,12 @@ package com.sanxmon.ceki.ui.theme
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
-import androidx.compose.ui.graphics.GenericShape
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 /**
@@ -12,12 +16,21 @@ import androidx.compose.ui.unit.dp
  * trims 12% off the bottom-right corner. Reused on primary buttons and header
  * accents; player cards keep sharp straight corners for fast re-reading.
  */
-val DiagonalCut: Shape = GenericShape { size, _ ->
-    moveTo(0f, 0f)
-    lineTo(size.width, 0f)
-    lineTo(size.width, size.height * 0.88f)
-    lineTo(0f, size.height)
-    close()
+val DiagonalCut: Shape = object : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline {
+        val path = Path().apply {
+            moveTo(0f, 0f)
+            lineTo(size.width, 0f)
+            lineTo(size.width, size.height * 0.88f)
+            lineTo(0f, size.height)
+            close()
+        }
+        return Outline.Generic(path)
+    }
 }
 
 /**

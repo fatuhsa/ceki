@@ -405,7 +405,7 @@ private fun ControlButton(
             .size(52.dp)
             .blockShadow()
             .border(2.dp, MaterialTheme.colorScheme.outlineVariant)
-            .background(MaterialTheme.colorScheme.surfaceElevated),
+            .background(MaterialTheme.appColors.surfaceElevated),
     ) { pressed ->
         Box(
             modifier = Modifier

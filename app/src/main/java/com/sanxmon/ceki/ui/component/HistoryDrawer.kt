@@ -123,14 +123,14 @@ fun HistoryDrawer(
                         modifier = Modifier
                             .size(32.dp)
                             .border(2.dp, MaterialTheme.colorScheme.outlineVariant)
-                            .background(MaterialTheme.colorScheme.surfaceElevated),
+                            .background(MaterialTheme.appColors.surfaceElevated),
                     ) { pressed ->
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
                                     if (pressed) {
-                                        MaterialTheme.colorScheme.surfacePressed
+                                        MaterialTheme.appColors.surfacePressed
                                     } else {
                                         Color.Transparent
                                     },

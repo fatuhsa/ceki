@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.sanxmon.ceki.ui.theme.appColors
 import com.sanxmon.ceki.ui.theme.appTypography
 
 /**
@@ -113,7 +114,7 @@ private fun SheetActionItem(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (pressed) MaterialTheme.colorScheme.surfacePressed else Color.Transparent)
+                .background(if (pressed) MaterialTheme.appColors.surfacePressed else Color.Transparent)
                 .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
